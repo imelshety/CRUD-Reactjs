@@ -3,14 +3,31 @@ import { getProducts } from "./Api/Api";
 import { useEffect, useState } from "react";
 const Products = () => {
     const [products, setProducts] = useState([])
+    useEffect(() => {
+        fetchProducts();
+    }, []);
     const fetchProducts = async () => {
         const productData = await getProducts();
         setProducts(productData);
     };
-    useEffect(() => {
-        fetchProducts();
-    }, []);
-    console.log(products);
+    const deleteHandleProduct = (productId) => {
+        fetch(`https://dummyjson.com/products/${productId}`, {
+            method: "DELETE",
+        })
+            .then((res) => {
+                // if (res.ok) {
+                //     // Successful deletion
+                //     // Update the state by removing the deleted product
+                //     setProducts((prevProducts) =>
+                //         prevProducts.filter((product) => product.id !== productId)
+                //     );
+                // }
+                (res.ok && setProducts((prevProducts) =>
+                    prevProducts.filter((product) => product.id !== productId)
+                ))
+            })
+
+    };
     return (
         <div className="w-full h-screen flex">
             <div className="w-full bg-gray-800 lg:w-1/4 lg:h-screen border-t-2">
@@ -62,7 +79,7 @@ const Products = () => {
                                     <td className="whitespace-nowrap text-center py-2 text-gray-700">
                                         <Link to={`/products/${product.id}`} className="rounded border border-current ml-2 px-5 py-2 text-sm font-medium text-indigo-600 transition hover:scale-110 hover:shadow-xl focus:outline-indigo-700 active:text-red-500">View</Link>
                                         <button className="rounded border border-current ml-2 px-5 py-2 text-sm font-medium text-indigo-600 transition hover:scale-110 hover:shadow-xl focus:outline-indigo-700 active:text-red-500">Edit</button>
-                                        <button className="rounded border border-current ml-2 px-5 py-2 text-sm font-medium text-red-600 transition hover:scale-110 hover:shadow-xl focus:outline-red-600 active:text-indigo-500">Delete</button>
+                                        <button className="rounded border border-current ml-2 px-5 py-2 text-sm font-medium text-red-600 transition hover:scale-110 hover:shadow-xl focus:outline-red-600 active:text-indigo-500" onClick={() => deleteHandleProduct(product.id)}>Delete</button>
 
                                     </td>
                                 </tr>
