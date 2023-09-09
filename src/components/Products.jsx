@@ -1,6 +1,8 @@
 import { Link, Outlet } from "react-router-dom";
 import { getProducts } from "./Api/Api";
 import { useEffect, useState } from "react";
+
+import Swal from 'sweetalert2'
 const Products = () => {
     const [products, setProducts] = useState([])
     useEffect(() => {
@@ -10,22 +12,28 @@ const Products = () => {
         const productData = await getProducts();
         setProducts(productData);
     };
-    const deleteHandleProduct = (productId) => {
-        fetch(`https://dummyjson.com/products/${productId}`, {
-            method: "DELETE",
-        })
-            .then((res) => {
-                // if (res.ok) {
-                //     // Successful deletion
-                //     // Update the state by removing the deleted product
-                //     setProducts((prevProducts) =>
-                //         prevProducts.filter((product) => product.id !== productId)
-                //     );
-                // }
-                (res.ok && setProducts((prevProducts) =>
-                    prevProducts.filter((product) => product.id !== productId)
-                ))
+    const deleteHandleProduct = (product) => {
+        Swal.fire({
+            title: `Are you sure you want to delete ${product.title}`,
+            showCancelButton: true,
+        }).then((data) => {
+            data.isConfirmed && fetch(`https://dummyjson.com/products/${product.id}`, {
+                method: "DELETE",
             })
+                .then((res) => {
+                    // if (res.ok) {
+                    //     // Successful deletion
+                    //     // Update the state by removing the deleted product
+                    //     setProducts((prevProducts) =>
+                    //         prevProducts.filter((product) => product.id !== productId)
+                    //     );
+                    // }
+                    (res.ok && setProducts((prevProducts) =>
+                        prevProducts.filter((productId) => productId.id !== product.id)
+                    ))
+                })
+
+        })
 
     };
     return (
@@ -79,7 +87,7 @@ const Products = () => {
                                     <td className="whitespace-nowrap text-center py-2 text-gray-700">
                                         <Link to={`/products/${product.id}`} className="rounded border border-current ml-2 px-5 py-2 text-sm font-medium text-indigo-600 transition hover:scale-110 hover:shadow-xl focus:outline-indigo-700 active:text-red-500">View</Link>
                                         <button className="rounded border border-current ml-2 px-5 py-2 text-sm font-medium text-indigo-600 transition hover:scale-110 hover:shadow-xl focus:outline-indigo-700 active:text-red-500">Edit</button>
-                                        <button className="rounded border border-current ml-2 px-5 py-2 text-sm font-medium text-red-600 transition hover:scale-110 hover:shadow-xl focus:outline-red-600 active:text-indigo-500" onClick={() => deleteHandleProduct(product.id)}>Delete</button>
+                                        <button className="rounded border border-current ml-2 px-5 py-2 text-sm font-medium text-red-600 transition hover:scale-110 hover:shadow-xl focus:outline-red-600 active:text-indigo-500" onClick={() => deleteHandleProduct(product)}>Delete</button>
 
                                     </td>
                                 </tr>
